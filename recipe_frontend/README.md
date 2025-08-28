@@ -9,6 +9,24 @@ This project provides a minimal React template with a clean, modern UI and minim
 - **Fast**: Minimal dependencies for quick loading times
 - **Simple**: Easy to understand and modify
 
+## Environment Configuration
+
+This app reads its runtime configuration from environment variables exposed by Create React App (must be prefixed with `REACT_APP_`). Copy `.env.example` to `.env` and set the values for your environment.
+
+Required:
+- `REACT_APP_API_BASE_URL` — Base URL of the backend API (no trailing slash).
+  - Example (local dev): `http://localhost:3001`
+  - Example (deployment): `https://api.example.com`
+
+Optional:
+- `REACT_APP_ROUTER_BASENAME` — Router basename if the frontend is served from a sub-path. Defaults to `/`.
+
+Where it's used:
+- `src/config.js` exposes a public function `getConfig()` that reads these env vars and normalizes them.
+- `src/api/client.js` imports `getConfig()` and creates an Axios instance with `baseURL` set to `apiBaseUrl` from the environment.
+
+If `REACT_APP_API_BASE_URL` is not set, the app will throw an error at startup to help catch misconfiguration early.
+
 ## Getting Started
 
 In the project directory, you can run:

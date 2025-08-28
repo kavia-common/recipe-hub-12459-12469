@@ -3,7 +3,13 @@
 // getConfig returns the app configuration derived from environment variables.
 //
 export function getConfig() {
-  /** This function returns the app configuration derived from environment variables. */
+  /**
+   * This function returns the app configuration derived from environment variables.
+   * Required:
+   *  - REACT_APP_API_BASE_URL: Base URL to the backend API (no trailing slash).
+   * Optional:
+   *  - REACT_APP_ROUTER_BASENAME: Router basename when served from a sub-path (defaults to "/").
+   */
   const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
   const routerBasename = process.env.REACT_APP_ROUTER_BASENAME || "/";
 
