@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./App.css";
 import { Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar";
+import ChatbotWidget from "./components/ChatbotWidget";
 import Home from "./pages/Home";
 import RecipeDetail from "./pages/RecipeDetail";
 import CreateEditRecipe from "./pages/CreateEditRecipe";
@@ -26,6 +27,9 @@ function App() {
   return (
     <div className="App">
       <Navbar />
+
+      {/* Floating controls */}
+      <ChatbotWidget />
       <div style={{ position: "fixed", bottom: 16, right: 16, zIndex: 20 }}>
         <button
           className="theme-toggle"
@@ -35,6 +39,8 @@ function App() {
           {theme === "light" ? "🌙 Dark" : "☀️ Light"}
         </button>
       </div>
+
+      {/* Routes */}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/recipes" element={<Home />} />
