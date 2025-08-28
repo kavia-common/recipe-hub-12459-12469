@@ -66,7 +66,7 @@ export default function CreateEditRecipe() {
         navigate(`/recipes/${created.id}`);
       }
     } catch {
-      setError("Save failed. Please ensure you are authenticated and have permission.");
+      setError("Save failed. Please ensure you are signed in and have permission to modify this recipe.");
     } finally {
       setSaving(false);
     }

@@ -31,6 +31,10 @@ If `REACT_APP_API_BASE_URL` is not set, the app will throw an error at startup t
 
 In the project directory, you can run:
 
+### Prerequisites
+- Ensure the backend is running (default dev port 3001). See the backend README.
+- Copy `.env.example` to `.env` and set `REACT_APP_API_BASE_URL` to the backend URL (no trailing slash).
+
 ### `npm start`
 
 Runs the app in development mode.\
@@ -44,6 +48,17 @@ Launches the test runner in interactive watch mode.
 
 Builds the app for production to the `build` folder.\
 It correctly bundles React in production mode and optimizes the build for the best performance.
+
+## Troubleshooting
+
+- Missing REACT_APP_API_BASE_URL:
+  The app will throw at startup if this is not set. Create `.env` from `.env.example` and set the correct backend URL.
+
+- 401/403 errors when creating/editing/favoriting:
+  You must be logged in. Use the Register and Login pages first. If the token expired, log in again.
+
+- CORS errors:
+  Ensure the backend CORS allows the frontend origin. The default backend settings allow all origins for dev.
 
 ## Customization
 
