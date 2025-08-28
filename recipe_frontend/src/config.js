@@ -1,7 +1,11 @@
-//
+/**
+ * PUBLIC_INTERFACE
+ * getConfig returns the app configuration derived from environment variables.
+ * It enforces presence of REACT_APP_API_BASE_URL at runtime in the browser.
+ * During certain CI/build steps, process.env may be missing; in that case we avoid
+ * throwing synchronously to prevent build hangs and instead return placeholders.
+ */
 // PUBLIC_INTERFACE
-// getConfig returns the app configuration derived from environment variables.
-//
 export function getConfig() {
   /**
    * This function returns the app configuration derived from environment variables.
@@ -13,12 +17,21 @@ export function getConfig() {
   const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
   const routerBasename = process.env.REACT_APP_ROUTER_BASENAME || "/";
 
+  // If running in a browser environment and apiBaseUrl is missing, throw so UI can show a friendly message.
+  const isBrowser = typeof window !== "undefined" && typeof document !== "undefined";
+
   if (!apiBaseUrl) {
-    // Developers: ensure REACT_APP_API_BASE_URL is set in .env to point at the backend.
-    // We throw to help catch misconfiguration early in CI or local dev.
-    throw new Error(
-      "Missing REACT_APP_API_BASE_URL. Please set it in your .env file."
-    );
+    const msg = "Missing REACT_APP_API_BASE_URL. Please set it in your .env file.";
+    if (isBrowser) {
+      // Let index.js catch and render a friendly message
+      throw new Error(msg);
+    }
+    // In non-browser (build/CI pre-processing) return a placeholder to prevent build-time crashes.
+    // Note: CRA inlines env vars at build time; if missing at actual runtime, index.js will still show the message.
+    return {
+      apiBaseUrl: "http://placeholder.invalid",
+      routerBasename,
+    };
   }
 
   return {
