@@ -3,6 +3,7 @@ import { listRecipes } from "../api/recipes";
 import RecipeCard from "../components/RecipeCard";
 import Pagination from "../components/Pagination";
 import "../components/recipes.css";
+import { useToast } from "../components/Toast";
 
 /**
  * Home/Browse page with search and pagination.
@@ -14,6 +15,7 @@ export default function Home() {
   const [page, setPage] = useState(1);
   const pageSize = 12;
   const [loading, setLoading] = useState(false);
+  const { notify } = useToast();
 
   const skip = useMemo(() => (page - 1) * pageSize, [page]);
 
@@ -37,7 +39,11 @@ export default function Home() {
   const onSearch = (e) => {
     e.preventDefault();
     setPage(1);
-    setTerm(q.trim());
+    const next = q.trim();
+    setTerm(next);
+    if (next) {
+      notify({ type: "info", message: `Searching for "${next}"...`, duration: 1500 });
+    }
   };
 
   const onFavChange = () => {
@@ -58,7 +64,7 @@ export default function Home() {
       </form>
 
       {loading ? (
-        <p style={{ textAlign: "center" }}>Loading...</p>
+        <p style={{ textAlign: "center" }}><span className="spinner" /> Loading...</p>
       ) : (
         <>
           <div className="grid">

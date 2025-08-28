@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { favoriteRecipe, unfavoriteRecipe } from "../api/recipes";
 import { useAuth } from "../context/AuthContext";
+import { useToast } from "./Toast";
 
 /**
  * Recipe card with basic details and favorite toggle.
@@ -11,24 +12,33 @@ export default function RecipeCard({ recipe, onFavoritedChanged }) {
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
   const [fav, setFav] = useState(Boolean(recipe.__is_favorite)); // local UI hint
+  const { notify } = useToast();
 
   const toggleFavorite = async () => {
     if (!isAuthenticated) {
       navigate("/login");
       return;
     }
+    if (busy) return;
     setBusy(true);
+
+    // Optimistic update
+    const prev = fav;
+    setFav(!prev);
+
     try {
-      if (fav) {
+      if (prev) {
         await unfavoriteRecipe(recipe.id);
-        setFav(false);
+        notify({ type: "success", message: "Removed from favorites." });
       } else {
         await favoriteRecipe(recipe.id);
-        setFav(true);
+        notify({ type: "success", message: "Added to favorites." });
       }
-      onFavoritedChanged && onFavoritedChanged(recipe.id, !fav);
+      onFavoritedChanged && onFavoritedChanged(recipe.id, !prev);
     } catch (e) {
-      // noop minimal error handling
+      // rollback and show error
+      setFav(prev);
+      notify({ type: "error", message: e?.uiMessage || "Failed to update favorite." });
     } finally {
       setBusy(false);
     }

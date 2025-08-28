@@ -88,6 +88,16 @@
   }
 }
 
+/* Simple inline spinner utility (duplicated in toast.css as component scope) */
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--border-color, #e5e7eb);
+  border-top-color: var(--button-bg, #4CAF50);
+  border-radius: 50%;
+  animation: App-logo-spin .8s linear infinite;
+}
+
 /* Responsive design for mobile */
 @media (max-width: 768px) {
   .theme-toggle {

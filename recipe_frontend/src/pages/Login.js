@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useToast } from "../components/Toast";
 
 /**
  * Login page using AuthContext
@@ -10,15 +11,19 @@ export default function Login() {
   const navigate = useNavigate();
   const [form, setForm] = useState({ username: "", password: "" });
   const [error, setError] = useState("");
+  const { notify } = useToast();
 
   const onSubmit = async (e) => {
     e.preventDefault();
     setError("");
     try {
       await login(form);
+      notify({ type: "success", message: "Signed in successfully." });
       navigate("/");
-    } catch {
-      setError("Login failed. Check your credentials.");
+    } catch (err) {
+      const msg = err?.uiMessage || "Login failed. Check your credentials.";
+      setError(msg);
+      notify({ type: "error", message: msg });
     }
   };
 

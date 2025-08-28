@@ -63,7 +63,31 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // You could add global handling/logging here
+    // Normalize backend error shapes to a string message for UI feedback.
+    const fallback = "Something went wrong. Please try again.";
+    try {
+      const { response } = error || {};
+      if (response && response.data) {
+        const data = response.data;
+        // Prefer explicit message
+        if (typeof data?.message === "string") {
+          error.uiMessage = data.message;
+        } else if (typeof data?.detail === "string") {
+          error.uiMessage = data.detail;
+        } else if (Array.isArray(data?.detail) && data.detail.length) {
+          // FastAPI validation array -> join messages
+          error.uiMessage = data.detail.map((d) => d.msg || JSON.stringify(d)).join("; ");
+        } else {
+          error.uiMessage = fallback;
+        }
+      } else if (error?.message) {
+        error.uiMessage = error.message;
+      } else {
+        error.uiMessage = fallback;
+      }
+    } catch {
+      error.uiMessage = fallback;
+    }
     return Promise.reject(error);
   }
 );

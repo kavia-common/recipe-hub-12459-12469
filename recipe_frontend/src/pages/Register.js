@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useToast } from "../components/Toast";
 
 /**
  * Register page using AuthContext
@@ -11,6 +12,7 @@ export default function Register() {
   const [form, setForm] = useState({ email: "", username: "", password: "" });
   const [msg, setMsg] = useState("");
   const [err, setErr] = useState("");
+  const { notify } = useToast();
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -19,9 +21,12 @@ export default function Register() {
     try {
       await register(form);
       setMsg("Account created. You can now sign in.");
+      notify({ type: "success", message: "Account created. Please sign in." });
       setTimeout(() => navigate("/login"), 700);
-    } catch {
-      setErr("Registration failed. Ensure data is valid and not already used.");
+    } catch (error) {
+      const message = error?.uiMessage || "Registration failed. Ensure data is valid and not already used.";
+      setErr(message);
+      notify({ type: "error", message });
     }
   };
 

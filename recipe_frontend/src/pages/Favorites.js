@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { listMyFavorites } from "../api/recipes";
 import RecipeCard from "../components/RecipeCard";
 import "../components/recipes.css";
+import { useToast } from "../components/Toast";
 
 /**
  * List of user's favorite recipes.
@@ -9,6 +10,7 @@ import "../components/recipes.css";
 export default function Favorites() {
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { notify } = useToast();
 
   const load = async () => {
     setLoading(true);
@@ -17,8 +19,9 @@ export default function Favorites() {
       // Mark as favorite for UI
       const mapped = (data || []).map((r) => ({ ...r, __is_favorite: true }));
       setRecipes(mapped);
-    } catch {
+    } catch (err) {
       setRecipes([]);
+      notify({ type: "error", message: err?.uiMessage || "Failed to load favorites." });
     } finally {
       setLoading(false);
     }
@@ -37,7 +40,7 @@ export default function Favorites() {
     <div className="page">
       <h2>My Favorites</h2>
       {loading ? (
-        <p>Loading...</p>
+        <p className="loading-inline"><span className="spinner" /> Loading...</p>
       ) : recipes.length === 0 ? (
         <p>You have not favorited any recipes yet.</p>
       ) : (

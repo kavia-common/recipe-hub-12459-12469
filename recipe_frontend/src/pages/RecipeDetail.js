@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { deleteRecipe, favoriteRecipe, getRecipe, unfavoriteRecipe } from "../api/recipes";
 import { useAuth } from "../context/AuthContext";
 import "../components/recipes.css";
+import { useToast } from "../components/Toast";
 
 /**
  * Recipe detail page with actions.
@@ -15,6 +16,7 @@ export default function RecipeDetail() {
   const [busyFav, setBusyFav] = useState(false);
   const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
+  const { notify } = useToast();
 
   useEffect(() => {
     const load = async () => {
@@ -38,17 +40,22 @@ export default function RecipeDetail() {
       navigate("/login");
       return;
     }
+    if (busyFav) return;
     setBusyFav(true);
+
+    const prev = fav;
+    setFav(!prev);
     try {
-      if (fav) {
+      if (prev) {
         await unfavoriteRecipe(recipe.id);
-        setFav(false);
+        notify({ type: "success", message: "Removed from favorites." });
       } else {
         await favoriteRecipe(recipe.id);
-        setFav(true);
+        notify({ type: "success", message: "Added to favorites." });
       }
-    } catch {
-      // ignore
+    } catch (e) {
+      setFav(prev);
+      notify({ type: "error", message: e?.uiMessage || "Failed to update favorite." });
     } finally {
       setBusyFav(false);
     }
@@ -58,9 +65,10 @@ export default function RecipeDetail() {
     if (!window.confirm("Are you sure you want to delete this recipe?")) return;
     try {
       await deleteRecipe(recipe.id);
+      notify({ type: "success", message: "Recipe deleted." });
       navigate("/recipes");
-    } catch {
-      // ignore for MVP
+    } catch (e) {
+      notify({ type: "error", message: e?.uiMessage || "Failed to delete recipe." });
     }
   };
 
