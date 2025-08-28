@@ -4,6 +4,7 @@ import RecipeCard from "../components/RecipeCard";
 import Pagination from "../components/Pagination";
 import "../components/recipes.css";
 import { useToast } from "../components/Toast";
+import NoteTitleRecommender from "../components/NoteTitleRecommender";
 
 /**
  * Home/Browse page with search and pagination.
@@ -16,6 +17,18 @@ export default function Home() {
   const pageSize = 12;
   const [loading, setLoading] = useState(false);
   const { notify } = useToast();
+
+  // Note title recommender state
+  const [showRecommender, setShowRecommender] = useState(false);
+  const onUseRecommendedTitle = (title) => {
+    // Provide quick feedback; on Home page we don’t have a title field to fill
+    notify({ type: "success", message: `Suggested title: "${title}" copied.` });
+    try {
+      navigator.clipboard?.writeText(title);
+    } catch {
+      // ignore
+    }
+  };
 
   const skip = useMemo(() => (page - 1) * pageSize, [page]);
 
@@ -52,6 +65,13 @@ export default function Home() {
 
   const isEnd = recipes.length < pageSize;
 
+  // Global event to open the recommender from Navbar
+  useEffect(() => {
+    const handler = () => setShowRecommender(true);
+    window.addEventListener("open-note-title-recommender", handler);
+    return () => window.removeEventListener("open-note-title-recommender", handler);
+  }, []);
+
   return (
     <div className="page">
       <form className="filters" onSubmit={onSearch}>
@@ -75,6 +95,18 @@ export default function Home() {
           <Pagination page={page} pageSize={pageSize} onPageChange={setPage} isEnd={isEnd} />
         </>
       )}
+      {/* Quick access to Note Title Recommender */}
+      <div style={{ position: "fixed", right: 16, bottom: 156, zIndex: 15 }}>
+        <button className="btn outline" onClick={() => setShowRecommender(true)} title="Open Note Title Recommender">
+          ✨ Recommend Title
+        </button>
+      </div>
+      <NoteTitleRecommender
+        open={showRecommender}
+        onClose={() => setShowRecommender(false)}
+        onUseTitle={onUseRecommendedTitle}
+        initialContent=""
+      />
     </div>
   );
 }

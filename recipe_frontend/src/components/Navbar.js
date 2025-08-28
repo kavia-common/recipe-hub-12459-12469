@@ -28,6 +28,7 @@ export default function Navbar() {
           <NavLink to="/recipes">Browse</NavLink>
           {isAuthenticated && <NavLink to="/favorites">Favorites</NavLink>}
           {isAuthenticated && <NavLink to="/recipes/new">Create</NavLink>}
+          <a href="#recommend-title" onClick={(e) => { e.preventDefault(); window.dispatchEvent(new CustomEvent("open-note-title-recommender")); }}>Recommend Title</a>
         </nav>
         <div className="auth">
           {isAuthenticated ? (

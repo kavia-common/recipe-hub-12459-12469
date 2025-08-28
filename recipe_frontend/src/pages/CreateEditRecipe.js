@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { createRecipe, getRecipe, updateRecipe } from "../api/recipes";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate, useParams } from "react-router-dom";
 import "../components/recipes.css";
 import { useToast } from "../components/Toast";
+import NoteTitleRecommender from "../components/NoteTitleRecommender";
 
 /**
  * Create or edit a recipe.
@@ -26,6 +27,23 @@ export default function CreateEditRecipe() {
   const [error, setError] = useState("");
   const [fieldErrors, setFieldErrors] = useState({});
   const { notify } = useToast();
+
+  // Title recommender modal
+  const [showRecommender, setShowRecommender] = useState(false);
+
+  // Compose initial content for title suggestion from description/ingredients/instructions
+  const initialNoteContent = useMemo(() => {
+    const parts = [];
+    if (form.description?.trim()) parts.push(`Description:\n${form.description.trim()}`);
+    if (form.ingredients?.trim()) parts.push(`Ingredients:\n${form.ingredients.trim()}`);
+    if (form.instructions?.trim()) parts.push(`Instructions:\n${form.instructions.trim()}`);
+    return parts.join("\n\n");
+  }, [form.description, form.ingredients, form.instructions]);
+
+  const onUseRecommendedTitle = (title) => {
+    setForm((f) => ({ ...f, title }));
+    notify({ type: "success", message: "Title applied from suggestion." });
+  };
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -118,13 +136,24 @@ export default function CreateEditRecipe() {
       <form onSubmit={onSubmit} style={{ display: "grid", gap: 12, maxWidth: 720 }}>
         <label>
           Title
-          <input
-            required
-            aria-invalid={Boolean(fieldErrors.title)}
-            value={form.title}
-            onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
-            placeholder="e.g., Spaghetti Carbonara"
-          />
+          <div style={{ display: "flex", gap: 8 }}>
+            <input
+              required
+              aria-invalid={Boolean(fieldErrors.title)}
+              value={form.title}
+              onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
+              placeholder="e.g., Spaghetti Carbonara"
+              style={{ flex: 1 }}
+            />
+            <button
+              type="button"
+              className="btn outline"
+              onClick={() => setShowRecommender(true)}
+              title="Get recommended titles from your note content"
+            >
+              Recommend Title
+            </button>
+          </div>
           {fieldErrors.title && <small style={{ color: "tomato" }}>{fieldErrors.title}</small>}
         </label>
         <label>
@@ -172,6 +201,12 @@ export default function CreateEditRecipe() {
           <button className="btn outline" type="button" onClick={() => navigate(-1)}>Cancel</button>
         </div>
       </form>
+      <NoteTitleRecommender
+        open={showRecommender}
+        onClose={() => setShowRecommender(false)}
+        onUseTitle={onUseRecommendedTitle}
+        initialContent={initialNoteContent}
+      />
     </div>
   );
 }

@@ -1,0 +1,77 @@
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.modal {
+  width: min(720px, 94vw);
+  max-height: 86vh;
+  background: var(--bg-primary, #fff);
+  color: var(--text-primary, #1f2937);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-secondary, #f8f9fa);
+  border-bottom: 1px solid var(--border-color, #e5e7eb);
+  padding: 10px 12px;
+}
+.modal-body {
+  padding: 12px;
+  overflow: auto;
+}
+
+.recommender .block { display: grid; gap: 6px; margin-bottom: 12px; }
+.recommender .label { font-weight: 600; font-size: 0.95rem; color: var(--text-primary, #1f2937); }
+.recommender textarea {
+  width: 100%;
+  min-height: 140px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color, #e5e7eb);
+  background: var(--bg-primary, #fff);
+  color: var(--text-primary, #1f2937);
+}
+.recommender .actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.recommender .error {
+  color: #dc2626;
+  margin-bottom: 8px;
+}
+.recommender .muted { color: #6b7280; }
+
+.suggestions .suggestion-list {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.suggestion-item {
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: var(--bg-secondary, #f8f9fa);
+}
+.suggestion-item .title {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.suggestion-item .row {
+  display: flex;
+  gap: 8px;
+}
